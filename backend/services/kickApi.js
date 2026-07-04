@@ -69,7 +69,7 @@ async function getKickLiveStatus(slug) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(`https://api.kick.com/public/v1/channels?slug=${slug}`, {
+    const res = await fetch(`https://api.kick.com/public/v1/channels/${slug}`, {
       signal: controller.signal,
       headers: {
         'Authorization': `Bearer ${token}`,
