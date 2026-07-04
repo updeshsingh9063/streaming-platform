@@ -103,9 +103,18 @@ async function getKickLiveStatus(slug) {
     // Parse the official response schema
     const isLive = data.is_live === true || (data.livestream !== null && data.livestream !== undefined);
     
+    let thumb = null;
+    if (isLive && data.livestream && data.livestream.thumbnail) {
+      thumb = data.livestream.thumbnail.url || (typeof data.livestream.thumbnail === 'string' ? data.livestream.thumbnail : null);
+    }
+    if (!thumb && data.user && data.user.profile_pic) {
+      thumb = data.user.profile_pic;
+    }
+    
     const result = {
       live: isLive ? 1 : 0,
-      viewers: isLive && data.livestream ? data.livestream.viewer_count : 0
+      viewers: isLive && data.livestream ? data.livestream.viewer_count : 0,
+      thumbnail: thumb
     };
 
     cache.set(cacheKey, result);

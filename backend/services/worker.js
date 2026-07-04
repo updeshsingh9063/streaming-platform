@@ -18,17 +18,18 @@ function startBackgroundWorker(db) {
           return {
             id: s.id,
             live: liveData.live ? 1 : 0,
-            viewers: liveData.viewers || 0
+            viewers: liveData.viewers || 0,
+            thumbnail: liveData.thumbnail || null
           };
         }
         return null;
       }));
 
       // Use a transaction for bulk update to be atomic and fast
-      const updateStmt = db.prepare('UPDATE streamers SET live = ?, viewers = ? WHERE id = ?');
+      const updateStmt = db.prepare('UPDATE streamers SET live = ?, viewers = ?, thumbnail = COALESCE(?, thumbnail) WHERE id = ?');
       const transaction = db.transaction((validUpdates) => {
         for (const update of validUpdates) {
-          updateStmt.run(update.live, update.viewers, update.id);
+          updateStmt.run(update.live, update.viewers, update.thumbnail, update.id);
         }
       });
 
