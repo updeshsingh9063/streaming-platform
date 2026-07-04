@@ -1,7 +1,7 @@
 CREATE TABLE streamers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  slug TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
   platform TEXT NOT NULL DEFAULT 'kick',
   blurb TEXT,
   live INTEGER DEFAULT 0,

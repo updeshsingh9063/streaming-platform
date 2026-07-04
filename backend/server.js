@@ -57,6 +57,13 @@ app.use('/api/admin', require('./routes/admin')(db));
 
 // Auto-seed any missing streamers on every startup (safe - uses INSERT OR IGNORE)
 function seedMissingStreamers() {
+  // Clean up any historical duplicates first
+  try {
+    db.prepare('DELETE FROM streamers WHERE id NOT IN (SELECT MIN(id) FROM streamers GROUP BY slug)').run();
+  } catch (e) {
+    console.error('Dedup error:', e.message);
+  }
+
   const insert = db.prepare(`
     INSERT OR IGNORE INTO streamers (name, slug, platform, blurb, live, viewers, featured, thumbnail, badge, approved)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
