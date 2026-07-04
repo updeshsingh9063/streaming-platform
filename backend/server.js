@@ -74,9 +74,12 @@ app.use('/api/admin', require('./routes/admin')(db));
 function seedMissingStreamers() {
   // Clean up any historical duplicates first
   try {
+    // Remove duplicate slugs, keeping the oldest row
     db.prepare('DELETE FROM streamers WHERE id NOT IN (SELECT MIN(id) FROM streamers GROUP BY slug)').run();
     // Wipe all fake mock Unsplash images AND empty strings so only live Kick thumbnails show
-    db.prepare("UPDATE streamers SET thumbnail = NULL WHERE thumbnail LIKE '%unsplash.com%' OR thumbnail = ''").run();
+    db.prepare("UPDATE streamers SET thumbnail = NULL WHERE thumbnail LIKE '%unsplash.com%' OR thumbnail = '' OR thumbnail IS NULL AND slug IN ('roadcrew','nightsignal','cliprunner','greenroom','streetpulse','pixeldrifter','vaultbreaker','sonicwave','neoncitytv','zerogravity')").run();
+    // Create unique index on slug to prevent future duplicates (safe - ignores if already exists)
+    try { db.prepare('CREATE UNIQUE INDEX idx_streamers_slug_unique ON streamers(slug)').run(); } catch(_) {}
   } catch (e) {
     console.error('Dedup error:', e.message);
   }
