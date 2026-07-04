@@ -35,7 +35,8 @@ app.use(helmet({
     }
   }
 }));
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+// Allow any origin for now so Vercel Preview URLs work
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // Rate-limit login: max 10 attempts per 15 min per IP
