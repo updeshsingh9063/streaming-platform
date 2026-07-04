@@ -89,15 +89,23 @@ async function getKickLiveStatus(slug) {
       return null;
     }
 
-    const data = await res.json();
+    const rawData = await res.json();
     
+    // Kick API might return an array (if queried via ?slug=) or an object (if /slug)
+    // Sometimes it wraps it in { data: [...] } or { data: {...} }
+    let data = rawData.data || rawData;
+    if (Array.isArray(data)) {
+      data = data[0];
+    }
+    
+    if (!data) return null;
+
     // Parse the official response schema
-    // Assuming if livestream object exists in the response, they are live
-    const isLive = data.livestream !== null && data.livestream !== undefined;
+    const isLive = data.is_live === true || (data.livestream !== null && data.livestream !== undefined);
     
     const result = {
-      live: isLive,
-      viewers: isLive ? data.livestream.viewer_count : 0
+      live: isLive ? 1 : 0,
+      viewers: isLive && data.livestream ? data.livestream.viewer_count : 0
     };
 
     cache.set(cacheKey, result);
