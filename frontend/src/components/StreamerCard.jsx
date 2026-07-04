@@ -9,7 +9,7 @@ function formatViewers(num) {
 }
 
 export default function StreamerCard({ streamer, index }) {
-  const { name, slug, platform, blurb, live, viewers, featured, thumbnail, badge, id } = streamer;
+  const { name, slug, platform, blurb, live, viewers, featured, thumbnail, badge, id, stream_title, category_name, subscribers } = streamer;
   const isLive = live === 1;
 
   return (
@@ -26,6 +26,10 @@ export default function StreamerCard({ streamer, index }) {
         )}
         {featured === 1 && <span className="status featured-status" style={{ top: '40px' }}>FEATURED</span>}
         <span className="rank-badge">#{String(index + 1).padStart(2, '0')}</span>
+        {/* Real stream title on the thumbnail when live */}
+        {isLive && stream_title && (
+          <div className="stream-title-overlay">{stream_title}</div>
+        )}
       </div>
 
       <div className="stream-info">
@@ -39,12 +43,22 @@ export default function StreamerCard({ streamer, index }) {
           </div>
         </div>
         
+        {/* Real category/game from Kick API */}
+        {category_name && (
+          <div className="stream-category">
+            <span>🎮 {category_name}</span>
+          </div>
+        )}
+        
         <div className="stream-meta">
           <span className={`platform-tag ${platform}`}>{platform.toUpperCase()}</span>
           {isLive ? (
             <span className="viewer-count">{formatViewers(viewers)}</span>
           ) : (
             <span className="viewer-count" style={{opacity: 0.5}}>Offline</span>
+          )}
+          {subscribers > 0 && (
+            <span className="sub-count" title="Subscribers">{formatViewers(subscribers)} subs</span>
           )}
         </div>
         

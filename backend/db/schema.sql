@@ -10,6 +10,9 @@ CREATE TABLE streamers (
   thumbnail TEXT,
   badge TEXT,
   approved INTEGER DEFAULT 0,
+  stream_title TEXT,
+  category_name TEXT,
+  subscribers INTEGER DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
 

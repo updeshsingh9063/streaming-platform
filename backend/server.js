@@ -19,6 +19,16 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
   process.exit(1);
 }
 
+// Safe schema migrations — add new columns without wiping existing data
+const migrations = [
+  "ALTER TABLE streamers ADD COLUMN stream_title TEXT",
+  "ALTER TABLE streamers ADD COLUMN category_name TEXT",
+  "ALTER TABLE streamers ADD COLUMN subscribers INTEGER DEFAULT 0",
+];
+for (const sql of migrations) {
+  try { db.prepare(sql).run(); } catch (_) { /* column already exists — safe to ignore */ }
+}
+
 // Background Worker
 const { startBackgroundWorker } = require('./services/worker');
 

@@ -112,7 +112,10 @@ async function getKickLiveStatus(slug) {
     const result = {
       live: isLive ? 1 : 0,
       viewers: isLive ? (stream.viewer_count || 0) : 0,
-      thumbnail: thumb || null
+      thumbnail: thumb || null,
+      stream_title: isLive ? (data.stream_title || stream.stream_title || null) : null,
+      category_name: (data.category && data.category.name) ? data.category.name : null,
+      subscribers: data.active_subscribers_count || 0
     };
 
     cache.set(cacheKey, result);

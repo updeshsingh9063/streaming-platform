@@ -841,6 +841,64 @@ h2 {
   background: var(--green);
 }
 
+/* ── Real live data display ── */
+.stream-title-overlay {
+  position: absolute;
+  bottom: 40px;
+  left: 10px;
+  right: 10px;
+  z-index: 2;
+  font-size: .72rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0,0,0,.6);
+  border-radius: 8px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(4px);
+}
+
+.stream-category {
+  padding: 4px 0 2px;
+  font-size: .72rem;
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.sub-count {
+  font-size: .66rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.watch-btn, .profile-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: .75rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.watch-btn { background: var(--green); color: #041008; }
+.profile-btn {
+  background: rgba(255,255,255,.06);
+  color: var(--fg);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.watch-btn:hover, .profile-btn:hover { opacity: .82; }
+
+
 .featured,
 .profiles,
 .admin,
