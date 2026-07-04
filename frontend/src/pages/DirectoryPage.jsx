@@ -6,7 +6,7 @@ export default function DirectoryPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [bannerUrl, setBannerUrl] = useState(null);
+  const [bannerUrl, setBannerUrl] = useState('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=900&q=80&fit=crop');
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';

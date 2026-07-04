@@ -23,7 +23,7 @@ export default function App() {
         <nav className="desktop-nav" aria-label="Primary navigation">
           <a href="/#live">Live</a>
           <a href="/#featured">Featured</a>
-          <a href="/#profiles">Profiles</a>
+          <a href="/#overview">Overview</a>
           <a href="/admin">Admin</a>
         </nav>
         <button className="header-cta" type="button" onClick={() => window.location.href = '/'}>Open Directory</button>
