@@ -615,6 +615,11 @@ h2 {
   min-height: 0;
   padding: 10px;
   border-radius: 24px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   transition: transform .28s ease, box-shadow .28s ease;
 }
 
@@ -661,6 +666,26 @@ h2 {
   background: var(--black);
   border-radius: 14px;
   font-weight: 1000;
+  font-size: .85rem;
+}
+
+.stream-info {
+  padding: 10px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.streamer-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.streamer-identity > div {
+  flex: 1;
+  min-width: 0;
 }
 
 .status {
@@ -739,9 +764,17 @@ h2 {
 .platform-tag.tiktok { background: #0a0f14; }
 
 .viewer-count {
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 1000;
-  letter-spacing: -.05em;
+  letter-spacing: -.03em;
+}
+
+.stream-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
 }
 
 .stream-thumb {
@@ -749,7 +782,10 @@ h2 {
   min-height: 148px;
   overflow: hidden;
   border-radius: 18px;
+  /* Stylized fallback for channels with no thumbnail yet */
   background-color: #0b100d;
+  background-image: radial-gradient(ellipse at 30% 50%, rgba(57,255,136,.08), transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(57,255,136,.05), transparent 50%);
   background-size: cover;
   background-position: center;
 }
@@ -784,8 +820,8 @@ h2 {
 
 .streamer-card.offline .thumb-overlay,
 .streamer-card.is-offline .thumb-overlay {
-  background:
-    linear-gradient(135deg, rgba(0,0,0,.65), rgba(0,0,0,.88));
+  /* Semi-transparent so thumbnail images show through */
+  background: linear-gradient(135deg, rgba(0,0,0,.45), rgba(0,0,0,.62));
 }
 
 .streamer-card.is-featured {
