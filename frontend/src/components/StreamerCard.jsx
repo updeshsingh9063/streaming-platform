@@ -16,7 +16,7 @@ export default function StreamerCard({ streamer, index }) {
     <article className={`streamer-card ${!isLive ? 'is-offline' : ''}`}>
       <div 
         className="stream-thumb" 
-        style={thumbnail ? { backgroundImage: `url('${thumbnail}')` } : {}}
+        style={(thumbnail && thumbnail.trim()) ? { backgroundImage: `url('${thumbnail.trim()}')` } : {}}
       >
         <div className="thumb-overlay"></div>
         {isLive ? (

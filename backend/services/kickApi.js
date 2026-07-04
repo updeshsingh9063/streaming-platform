@@ -100,14 +100,15 @@ async function getKickLiveStatus(slug) {
     const stream = data.stream || {};
     const isLive = stream.is_live === true;
 
-    // Thumbnail: use live stream thumbnail if live, else banner_picture
+    // Thumbnail: use live stream thumbnail if live, else banner_picture. Treat "" as null.
     let thumb = null;
-    if (isLive && stream.thumbnail) {
-      thumb = stream.thumbnail;
+    if (isLive && stream.thumbnail && stream.thumbnail.trim()) {
+      thumb = stream.thumbnail.trim();
     }
-    if (!thumb && data.banner_picture) {
-      thumb = data.banner_picture;
+    if (!thumb && data.banner_picture && data.banner_picture.trim()) {
+      thumb = data.banner_picture.trim();
     }
+    if (!thumb) thumb = null;
 
     const result = {
       live: isLive ? 1 : 0,

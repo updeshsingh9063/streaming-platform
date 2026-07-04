@@ -38,7 +38,11 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://*.unsplash.com", "blob:"],
+      imgSrc: ["'self'", "data:", "blob:",
+        "https://images.unsplash.com", "https://*.unsplash.com",
+        "https://files.kick.com", "https://*.kick.com",
+        "https://images.kick.com"
+      ],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       connectSrc: ["'self'"],
@@ -71,8 +75,8 @@ function seedMissingStreamers() {
   // Clean up any historical duplicates first
   try {
     db.prepare('DELETE FROM streamers WHERE id NOT IN (SELECT MIN(id) FROM streamers GROUP BY slug)').run();
-    // Wipe all fake mock Unsplash images so only live thumbnails show
-    db.prepare("UPDATE streamers SET thumbnail = NULL WHERE thumbnail LIKE '%unsplash.com%'").run();
+    // Wipe all fake mock Unsplash images AND empty strings so only live Kick thumbnails show
+    db.prepare("UPDATE streamers SET thumbnail = NULL WHERE thumbnail LIKE '%unsplash.com%' OR thumbnail = ''").run();
   } catch (e) {
     console.error('Dedup error:', e.message);
   }
