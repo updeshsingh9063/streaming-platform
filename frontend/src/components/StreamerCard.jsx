@@ -19,14 +19,12 @@ export default function StreamerCard({ streamer, index }) {
         style={thumbnail ? { backgroundImage: `url('${thumbnail}')` } : {}}
       >
         <div className="thumb-overlay"></div>
-        <div className="thumb-status">
-          {isLive ? (
-            <span className="live-pill"><span className="pulse"></span> LIVE</span>
-          ) : (
-            <span className="offline-pill"><span className="pulse"></span> OFFLINE</span>
-          )}
-          {featured === 1 && <span className="featured-pill">FEATURED</span>}
-        </div>
+        {isLive ? (
+          <span className="status">LIVE</span>
+        ) : (
+          <span className="status">OFFLINE</span>
+        )}
+        {featured === 1 && <span className="status featured-status" style={{ top: '40px' }}>FEATURED</span>}
         <span className="rank-badge">#{String(index + 1).padStart(2, '0')}</span>
       </div>
 

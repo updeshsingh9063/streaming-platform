@@ -625,8 +625,7 @@ h2 {
 
 .streamer-card.offline,
 .streamer-card.is-offline {
-  filter: grayscale(.85);
-  opacity: .62;
+  /* Removed grayscale so images stay colorful when offline */
 }
 
 .streamer-card::before {
