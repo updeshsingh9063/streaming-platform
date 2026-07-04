@@ -69,7 +69,7 @@ async function getKickLiveStatus(slug) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(`https://api.kick.com/public/v1/channels/${slug}`, {
+    const res = await fetch(`https://api.kick.com/public/v1/channels?slug=${slug}`, {
       signal: controller.signal,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -90,31 +90,29 @@ async function getKickLiveStatus(slug) {
     }
 
     const rawData = await res.json();
-    
-    // Kick API might return an array (if queried via ?slug=) or an object (if /slug)
-    // Sometimes it wraps it in { data: [...] } or { data: {...} }
-    let data = rawData.data || rawData;
-    if (Array.isArray(data)) {
-      data = data[0];
-    }
-    
+
+    // API returns { data: [...], message: 'OK' } — data is an array
+    let data = rawData.data;
+    if (Array.isArray(data)) data = data[0];
     if (!data) return null;
 
-    // Parse the official response schema
-    const isLive = data.is_live === true || (data.livestream !== null && data.livestream !== undefined);
-    
+    // Real schema: data.stream.is_live, data.stream.viewer_count, data.stream.thumbnail
+    const stream = data.stream || {};
+    const isLive = stream.is_live === true;
+
+    // Thumbnail: use live stream thumbnail if live, else banner_picture
     let thumb = null;
-    if (isLive && data.livestream && data.livestream.thumbnail) {
-      thumb = data.livestream.thumbnail.url || (typeof data.livestream.thumbnail === 'string' ? data.livestream.thumbnail : null);
+    if (isLive && stream.thumbnail) {
+      thumb = stream.thumbnail;
     }
-    if (!thumb && data.user && data.user.profile_pic) {
-      thumb = data.user.profile_pic;
+    if (!thumb && data.banner_picture) {
+      thumb = data.banner_picture;
     }
-    
+
     const result = {
       live: isLive ? 1 : 0,
-      viewers: isLive && data.livestream ? data.livestream.viewer_count : 0,
-      thumbnail: thumb
+      viewers: isLive ? (stream.viewer_count || 0) : 0,
+      thumbnail: thumb || null
     };
 
     cache.set(cacheKey, result);
