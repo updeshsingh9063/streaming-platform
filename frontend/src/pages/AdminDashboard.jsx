@@ -338,21 +338,26 @@ function AnalyticsTab() {
       {/* Summary cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 12, marginBottom: 28 }}>
         {[
+          { label: 'DAU (Daily Active)', value: summary.dau },
+          { label: 'Growth', value: summary.dauGrowth },
           { label: 'Live now', value: summary.liveCount },
           { label: 'Total viewers', value: summary.totalViewers?.toLocaleString() },
           { label: 'Streamers', value: summary.totalStreamers },
           { label: 'Featured', value: summary.featuredCount },
+          { label: 'Engagement', value: summary.engagement },
+          { label: 'Retention', value: summary.retention },
+          { label: 'Revenue Tracker', value: summary.revenue },
           { label: 'Pending apps', value: summary.pendingApps },
         ].map(({ label, value }) => (
           <div key={label} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 12, padding: '14px 16px' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: CHART_GREEN, fontFamily: 'Barlow Condensed, sans-serif' }}>{value}</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: CHART_GREEN, fontFamily: 'Barlow Condensed, sans-serif' }}>{value}</div>
             <div style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: 2 }}>{label}</div>
           </div>
         ))}
       </div>
 
       {/* Traffic chart */}
-      <h4 style={{ marginBottom: 12 }}>7-Day Traffic</h4>
+      <h4 style={{ marginBottom: 12 }}>7-Day DAU & Traffic</h4>
       <div style={{ background: 'var(--bg)', borderRadius: 14, padding: '16px 8px', marginBottom: 24 }}>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={traffic}>
@@ -366,6 +371,7 @@ function AnalyticsTab() {
             <XAxis dataKey="day" stroke="var(--muted)" tick={{ fontSize: 11 }} />
             <YAxis stroke="var(--muted)" tick={{ fontSize: 11 }} />
             <Tooltip contentStyle={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 8 }} />
+            <Area type="monotone" dataKey="dau" stroke="#fff" fill="none" strokeWidth={2} name="DAU" />
             <Area type="monotone" dataKey="visitors" stroke={CHART_GREEN} fill="url(#colorV)" strokeWidth={2} name="Visitors" />
           </AreaChart>
         </ResponsiveContainer>
@@ -433,14 +439,21 @@ const labelStyle = {
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('roster');
   const [streamers, setStreamers] = useState([]);
+  const [authVerified, setAuthVerified] = useState(false);
   const navigate = useNavigate();
 
   const loadStreamers = useCallback(async () => {
     const token = localStorage.getItem('adminToken');
     if (!token) { navigate('/admin/login'); return; }
-    const res = await fetch(`${API}/admin/streamers`, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401 || res.status === 403) { localStorage.removeItem('adminToken'); navigate('/admin/login'); return; }
-    setStreamers(await res.json());
+    try {
+      const res = await fetch(`${API}/admin/streamers`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401 || res.status === 403) { localStorage.removeItem('adminToken'); navigate('/admin/login'); return; }
+      setStreamers(await res.json());
+      setAuthVerified(true);
+    } catch (e) {
+      console.error(e);
+      navigate('/admin/login');
+    }
   }, [navigate]);
 
   useEffect(() => { loadStreamers(); }, [loadStreamers]);
@@ -452,6 +465,10 @@ export default function AdminDashboard() {
     { id: 'appearance', label: 'Appearance' },
     { id: 'analytics', label: 'Analytics' },
   ];
+
+  if (!authVerified) {
+    return <div style={{ padding: '100px', color: 'white', textAlign: 'center' }}>Authenticating...</div>;
+  }
 
   return (
     <main id="top">

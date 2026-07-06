@@ -64,6 +64,16 @@ const loginLimiter = rateLimit({
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
+app.post('/api/track', (req, res) => {
+  try {
+    const ua = req.headers['user-agent'] || 'unknown';
+    const event = req.body.event || 'pageview';
+    db.prepare('INSERT INTO analytics_events (event, ua) VALUES (?, ?)').run(event, ua);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.use('/api/streamers', require('./routes/streamers')(db));
 app.use('/api/appearance', require('./routes/appearance')(db));
 app.use('/api/auth/login', loginLimiter);

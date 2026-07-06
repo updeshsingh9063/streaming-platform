@@ -56,10 +56,22 @@ export default function StreamerProfilePage() {
             </div>
             <div className="profile-meta">
               <span className={`platform-tag ${streamer.platform}`}>{streamer.platform.toUpperCase()}</span>
-              {streamer.badge && <span className="featured-pill" style={{marginLeft: '10px'}}>{streamer.badge.toUpperCase()}</span>}
+              {streamer.featured === 1 && <span className="featured-pill" style={{marginLeft: '10px'}}>FEATURED</span>}
+              {streamer.badge && streamer.badge.split(',').map(b => (
+                <span key={b.trim()} className="featured-pill" style={{marginLeft: '10px', background: 'rgba(255,255,255,0.1)', color: 'white'}}>{b.trim().toUpperCase()}</span>
+              ))}
               <h3>{streamer.name}</h3>
+              {streamer.stream_title && <div style={{ fontSize: '1.1rem', marginBottom: '8px', color: 'var(--green)' }}>{streamer.stream_title}</div>}
+              {streamer.category_name && <div style={{ fontSize: '0.9rem', marginBottom: '8px', color: 'var(--muted)' }}>Playing: {streamer.category_name}</div>}
               <p>{streamer.blurb}</p>
               
+              {!isLive && (
+                <div style={{ marginTop: '10px', display: 'flex', gap: '15px', color: 'var(--muted)', fontSize: '0.9rem' }}>
+                  <span><strong>{formatViewers(streamer.viewers || 0)}</strong> Last Viewers</span>
+                  <span><strong>{formatViewers(streamer.subscribers || 0)}</strong> Followers</span>
+                </div>
+              )}
+
               <div style={{ marginTop: '20px', display: 'flex', gap: '15px', alignItems: 'center' }}>
                 {isLive ? (
                   <>

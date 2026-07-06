@@ -164,21 +164,45 @@ module.exports = (db) => {
       const pendingApps = db.prepare("SELECT COUNT(*) as count FROM applications WHERE status='pending'").get().count;
       const platforms = db.prepare("SELECT platform, COUNT(*) as count FROM streamers WHERE approved=1 GROUP BY platform").all();
 
-      // Simulated 7-day DAU trend (since we have analytics_events table, seed mock data)
+      // Real 7-day DAU and traffic trend from analytics_events table
       const days = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
+        const isoDate = d.toISOString().split('T')[0];
         const label = d.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        const visitorsQuery = db.prepare(`SELECT COUNT(*) as cnt FROM analytics_events WHERE date(created_at) = ?`).get(isoDate).cnt;
+        const dauQuery = db.prepare(`SELECT COUNT(DISTINCT ua) as cnt FROM analytics_events WHERE date(created_at) = ?`).get(isoDate).cnt;
+        
         days.push({
           day: label,
-          visitors: Math.floor(Math.random() * 800 + 200),
-          viewers: Math.floor(totalViewers * (0.6 + Math.random() * 0.8)),
+          visitors: visitorsQuery,
+          viewers: 0,
+          dau: dauQuery,
         });
       }
 
+      // Compute engagement and growth
+      const today = days[days.length - 1];
+      const yesterday = days[days.length - 2];
+      const dau = today.dau;
+      let dauGrowth = '0%';
+      if (yesterday.dau > 0 || dau > 0) {
+        if (yesterday.dau === 0) {
+          dauGrowth = '+100%';
+        } else {
+          const diff = ((dau - yesterday.dau) / yesterday.dau) * 100;
+          dauGrowth = `${diff > 0 ? '+' : ''}${diff.toFixed(1)}%`;
+        }
+      }
+      
+      const engagement = today.visitors > 0 ? `${(today.visitors / (dau || 1)).toFixed(1)} views/user` : 'N/A';
+      const retention = 'N/A (No Accounts)';
+      const revenue = '$0.00 (Pending integration)';
+
       res.json({
-        summary: { totalStreamers, liveCount, totalViewers, featuredCount, pendingApps },
+        summary: { totalStreamers, liveCount, totalViewers, featuredCount, pendingApps, dau, dauGrowth, engagement, retention, revenue },
         platforms,
         traffic: days,
       });

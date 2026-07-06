@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import DirectoryPage from './pages/DirectoryPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -7,6 +7,17 @@ import AdminDashboard from './pages/AdminDashboard';
 import StreamerProfilePage from './pages/StreamerProfilePage';
 
 export default function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    fetch(`${apiUrl}/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'pageview' })
+    }).catch(console.error);
+  }, [location.pathname]);
+
   return (
     <>
       <div className="ambient ambient-a"></div>
